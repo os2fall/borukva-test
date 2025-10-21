@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "multi_bench",
+  "key": {
+    "l": "#minecraft:logs"
+  },
+  "pattern": [
+    "ll",
+    "ll",
+    "ll"
+  ],
+  "result": {
+    "count": 1,
+    "id": "borukva-test:borukva_block"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "borukva-test:block/borukva_block"
+    }
+  }
+}

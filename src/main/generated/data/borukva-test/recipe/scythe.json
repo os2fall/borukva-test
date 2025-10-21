@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "N": "minecraft:netherite_ingot",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "NNN",
+    " SN",
+    "S N"
+  ],
+  "result": {
+    "count": 1,
+    "id": "borukva-test:scythe"
+  }
+}
