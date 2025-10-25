@@ -1,6 +1,0 @@
-{
-  "pack": {
-    "description": "Borukva resources",
-    "polymer:load-on-join": true
-  }
-}

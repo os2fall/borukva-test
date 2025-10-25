@@ -8,7 +8,6 @@ import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -69,7 +68,7 @@ public class ModBlocks {
             // клієнт бачить Emerald Block, але сервер має власний блок
             this.polymerState = PolymerBlockResourceUtils.requestBlock(
                     BlockModelType.FULL_BLOCK,
-                    PolymerBlockModel.of(Identifier.of(MOD_ID, "src/main/generated/assets/borukva-test/models/block/borukva_block.json"))
+                    PolymerBlockModel.of(Identifier.of(MOD_ID, "block/borukva_block.json"))
             );
         }
 
