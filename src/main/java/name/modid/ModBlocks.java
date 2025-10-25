@@ -9,72 +9,42 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.MapColor;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-public class ModBlocks {
-    public static final String MOD_ID = "borukva-test";
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
-    public static Block BORUKVA_BLOCK;
-    public static Item BORUKVA_BLOCK_ITEM;
+public class ModBlocks {
+    public static PolymerGreenBlock BORUKVA_BLOCK = register("borukva_block", settings -> new PolymerGreenBlock(settings
+            .mapColor(MapColor.EMERALD_GREEN).instrument(NoteBlockInstrument.BASEDRUM).strength(2.0f, 3.0f).nonOpaque()));
 
     public static void registerAll() {
-        Identifier id = Identifier.of(MOD_ID, "borukva_block");
-        RegistryKey<Block> blockKey = RegistryKey.of(RegistryKeys.BLOCK, id);
-
-        AbstractBlock.Settings settings = AbstractBlock.Settings.create()
-                .registryKey(blockKey)
-                .mapColor(MapColor.EMERALD_GREEN)
-                .strength(2.0f, 3.0f);
-
-        // === Polymer Block ===
-        BORUKVA_BLOCK = Registry.register(
-                Registries.BLOCK,
-                id,
-                new PolymerGreenBlock(settings)
-        );
-
-        // === Polymer BlockItem ===
-        RegistryKey<Item> itemKey = RegistryKey.of(RegistryKeys.ITEM, id);
-        Item.Settings itemSettings = new Item.Settings()
-                .registryKey(itemKey)
-                .maxCount(64);
-
-        BORUKVA_BLOCK_ITEM = Registry.register(
-                Registries.ITEM,
-                id,
-                new PolymerBlockItem(
-                        BORUKVA_BLOCK,
-                        itemSettings,
-                        ((PolymerGreenBlock) BORUKVA_BLOCK).getPolymerBlockState(
-                                BORUKVA_BLOCK.getDefaultState(),
-                                PacketContext.create()
-                        ).getBlock().asItem() // fallback item
-                )
-        );
     }
 
-    // --- Polymer Block Implementation ---
-    public static class PolymerGreenBlock extends Block implements PolymerTexturedBlock {
-        private final BlockState polymerState;
+    public static <T extends Block> T register(String path, Function<AbstractBlock.Settings, T> function) {
+        return register(path, AbstractBlock.Settings.create(), function);
+    }
 
-        public PolymerGreenBlock(AbstractBlock.Settings settings) {
-            super(settings);
-            // клієнт бачить Emerald Block, але сервер має власний блок
-            this.polymerState = PolymerBlockResourceUtils.requestBlock(
-                    BlockModelType.FULL_BLOCK,
-                    PolymerBlockModel.of(Identifier.of(MOD_ID, "block/borukva_block"))
-            );
-        }
+    public static <T extends Block, Y extends Block> T register(String path, Y copyFrom, BiFunction<AbstractBlock.Settings, Y, T> function) {
+        return register(path, AbstractBlock.Settings.copy(copyFrom), (settings) -> function.apply(settings, copyFrom));
+    }
 
-        @Override
-        public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
-            return this.polymerState;
+    @NotNull
+    public static <T extends Block> T register(String path, AbstractBlock.Settings settings, Function<AbstractBlock.Settings, T> function) {
+        var id = Identifier.of(BorukvaTest.MOD_ID, path);
+        var item = function.apply(settings.registryKey(RegistryKey.of(RegistryKeys.BLOCK, id)));
+        if (item == null) {
+            //noinspection DataFlowIssue
+            return null;
         }
+        return Registry.register(Registries.BLOCK, id, item);
     }
 }
