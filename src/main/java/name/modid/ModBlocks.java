@@ -68,7 +68,7 @@ public class ModBlocks {
             // клієнт бачить Emerald Block, але сервер має власний блок
             this.polymerState = PolymerBlockResourceUtils.requestBlock(
                     BlockModelType.FULL_BLOCK,
-                    PolymerBlockModel.of(Identifier.of(MOD_ID, "block/borukva_block.json"))
+                    PolymerBlockModel.of(Identifier.of(MOD_ID, "block/borukva_block"))
             );
         }
 
