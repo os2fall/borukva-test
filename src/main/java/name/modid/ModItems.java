@@ -1,65 +1,45 @@
 package name.modid;
 
-import eu.pb4.polymer.core.api.item.PolymerItem;
+import eu.pb4.factorytools.api.item.FactoryBlockItem;
+import eu.pb4.polymer.core.api.block.PolymerBlock;
+import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
-import xyz.nucleoid.packettweaker.PacketContext;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ModItems {
-    public static final String MOD_ID = "borukva-test";
-    public static Item SCYTHE;
+    public static Item SCYTHE = register("scythe", PolymerScythe::new);
+    public static Item BORUKVA_BLOCK = register(ModBlocks.BORUKVA_BLOCK);
 
     public static void registerAll() {
-        Identifier id = Identifier.of(MOD_ID, "scythe");
-        RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, id);
 
-        Item.Settings settings = new Item.Settings().maxCount(1).registryKey(key);
-
-        SCYTHE = Registry.register(Registries.ITEM, id, new PolymerScythe(settings));
     }
 
-    public static class PolymerScythe extends Item implements PolymerItem {
-        private final Identifier model;
+    public static <T extends Item> T register(String path, Function<Item.Settings, T> function) {
+        var id = Identifier.of(BorukvaTest.MOD_ID, path);
+        var item = function.apply(new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, id)));
+        Registry.register(Registries.ITEM, id, item);
+        return item;
+    }
 
-        public PolymerScythe(Settings settings) {
-            super(settings);
+    public static <E extends Block & PolymerBlock> BlockItem register(E block) {
+        return register(block, (s) -> {});
+    }
+    public static <E extends Block & PolymerBlock> BlockItem register(E block, Consumer<Item.Settings> settingsConsumer) {
+        var id = Registries.BLOCK.getId(block);
+        BlockItem item;
+        var settings = new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, id)).useBlockPrefixedTranslationKey();
+        settingsConsumer.accept(settings);
+        item = new FactoryBlockItem(block, settings);
 
-            // --- dynamic model detection ---
-            String modelPath = findModelPath();
-            this.model = Identifier.of(MOD_ID, modelPath);
-        }
-
-        @Override
-        public Item getPolymerItem(ItemStack stack, PacketContext context) {
-            return Items.NETHERITE_SWORD; // fallback
-        }
-
-        @Override
-        public Identifier getPolymerItemModel(ItemStack stack, PacketContext context) {
-            return this.model;
-        }
-
-        private static String findModelPath() {
-            Path modelItem = Paths.get("src/main/generated/assets/" + MOD_ID + "/models/item/" + "scythe" + ".json");
-            Path itemRoot = Paths.get("src/main/generated/assets/" + MOD_ID + "/items/" + "scythe" + ".json");
-
-            if (Files.exists(modelItem)) {
-                return "item/" + "scythe";
-            } else if (Files.exists(itemRoot)) {
-                return "items/" + "scythe";
-            } else {
-                return "item/" + "scythe"; // fallback
-            }
-        }
+        Registry.register(Registries.ITEM, id, item);
+        return item;
     }
 }

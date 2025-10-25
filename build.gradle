@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.10.1'
+    id 'fabric-loom' version '1.11-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -15,18 +15,27 @@ repositories {
     mavenCentral()
 }
 
+fabricApi {
+    configureDataGeneration {
+        client = true
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:1.21.8"
     mappings "net.fabricmc:yarn:1.21.8+build.1:v2"
     modImplementation "net.fabricmc:fabric-loader:0.16.13"
     modImplementation "net.fabricmc.fabric-api:fabric-api:0.134.0+1.21.8"
 
-    // Polymer 0.13.13 для 1.21.8 — ядро + блоки + ресурспак + NETWORKING (дає PacketContext)
+    modImplementation "eu.pb4:polymer-core:${polymer_version}"
+    modImplementation "eu.pb4:polymer-blocks:${polymer_version}"
+    modImplementation "eu.pb4:polymer-resource-pack:${polymer_version}"
+    modImplementation ("eu.pb4:polymer-resource-pack-extras:${polymer_version}")
+    modImplementation "eu.pb4:polymer-networking:${polymer_version}"
+    modImplementation "eu.pb4:polymer-autohost:${polymer_version}"
+    modImplementation "eu.pb4:polymer-virtual-entity:${polymer_version}"
 
-    modImplementation "eu.pb4:polymer-core:0.13.13+1.21.8"
-    modImplementation "eu.pb4:polymer-blocks:0.13.13+1.21.8"
-    modImplementation "eu.pb4:polymer-resource-pack:0.13.13+1.21.8"
-    modImplementation "eu.pb4:polymer-networking:0.13.13+1.21.8"
+    modImplementation include('eu.pb4:factorytools:0.7.5+1.21.8')
 }
 
 sourceSets {
